@@ -5,7 +5,7 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- PWA мета-теги для iOS -->
+  <!-- PWA для iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="READY">
@@ -17,30 +17,29 @@
 
   <title>READY</title>
 
+  <!-- Регистрация сервис-воркера -->
   <script>
-
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('flutter_service_worker.js', {
-          scope: '.'
-        }).then(function(registration) {
-          console.log('ServiceWorker registered: ', registration);
-        }).catch(function(registrationError) {
-          console.log('ServiceWorker registration failed: ', registrationError);
-        });
+        navigator.serviceWorker.register('flutter_service_worker.js?v=2893088922');
       });
     }
+  </script>
 
-
-    document.addEventListener('touchstart', function() {
-
+  <!-- Разблокировка звука (и на ПК, и на мобилках) -->
+  <script>
+    function unlockAudio() {
       var audio = document.createElement('audio');
       audio.volume = 0;
       audio.play().then(function() {
         audio.pause();
         audio.remove();
       }).catch(function(e) {});
-    }, { once: true });
+    }
+
+    document.addEventListener('mousedown', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
+    document.addEventListener('touchstart', unlockAudio, { once: true });
   </script>
 </head>
 <body>
