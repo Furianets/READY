@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- PWA мета-теги для iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="READY">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- PWA для Android -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+
+  <title>READY</title>
+
+  <script>
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('flutter_service_worker.js', {
+          scope: '.'
+        }).then(function(registration) {
+          console.log('ServiceWorker registered: ', registration);
+        }).catch(function(registrationError) {
+          console.log('ServiceWorker registration failed: ', registrationError);
+        });
+      });
+    }
+
+
+    document.addEventListener('touchstart', function() {
+
+      var audio = document.createElement('audio');
+      audio.volume = 0;
+      audio.play().then(function() {
+        audio.pause();
+        audio.remove();
+      }).catch(function(e) {});
+    }, { once: true });
+  </script>
+</head>
+<body>
+<script src="main.dart.js" type="application/javascript"></script>
+</body>
+</html>
