@@ -83,11 +83,14 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       setState(() {
         _soundEnabled = prefs.getBool('soundEnabled') ?? false;
       });
+
+      if (_soundEnabled) {
+        _preloadAudio();
+      }
     } catch (e) {
       print('Ошибка загрузки настроек: $e');
     }
   }
-
 
   Future<void> _saveSoundSettings(bool enabled) async {
     try {
@@ -98,7 +101,14 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     }
   }
 
-
+  Future<void> _preloadAudio() async {
+    try {
+      await _audioPlayer.setSource(AssetSource('whistle.mp3'));
+      print('Аудио предзагружено');
+    } catch (e) {
+      print('Ошибка предзагрузки аудио: $e');
+    }
+  }
 
   void _toggleSound() async {
     setState(() {
@@ -108,10 +118,12 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     await _saveSoundSettings(_soundEnabled);
 
     if (_soundEnabled) {
-      _whistle();
+      await _preloadAudio();
+      //_playActivationSound();
+    } else {
+      await _audioPlayer.stop();
     }
   }
-
 
   Future<void> _playActivationSound() async {
     try {
@@ -128,18 +140,18 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     return _settings.minTime + random.nextInt(_settings.maxTime - _settings.minTime + 1);
   }
 
+  // УПРОЩЕННЫЙ МЕТОД - только звук, без вибрации
   Future<void> _whistle() async {
+    // Если звук выключен - просто выходим
     if (!_soundEnabled) {
       print('Звук выключен');
       return;
     }
 
     try {
-      final player = AudioPlayer();
-      await player.play(AssetSource('whistle.mp3'));
-
-      Timer(Duration(milliseconds: 200), () => player.dispose());
-
+      await _audioPlayer.stop();
+      await Future.delayed(Duration(milliseconds: 50));
+      await _audioPlayer.play(AssetSource('whistle.mp3'));
       print('Свисток проигран!');
     } catch (e) {
       print('Ошибка воспроизведения звука: $e');
@@ -148,6 +160,15 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
 
   void _startTimer() {
     if (_isRunning) return;
+
+    if (_soundEnabled) {
+      _audioPlayer.setVolume(0.0);
+      _audioPlayer.play(AssetSource('whistle.mp3'));
+      Future.delayed(Duration(milliseconds: 50), () {
+        _audioPlayer.pause();
+        _audioPlayer.setVolume(1.0);
+      });
+    }
 
     int randomTime = _generateRandomTime();
     print('Сгенерировано время: $randomTime секунд');
