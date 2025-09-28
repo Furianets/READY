@@ -83,14 +83,11 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       setState(() {
         _soundEnabled = prefs.getBool('soundEnabled') ?? false;
       });
-
-      if (_soundEnabled) {
-        _preloadAudio();
-      }
     } catch (e) {
       print('Ошибка загрузки настроек: $e');
     }
   }
+
 
   Future<void> _saveSoundSettings(bool enabled) async {
     try {
